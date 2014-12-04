@@ -4,7 +4,7 @@
 #include <stdio.h>
 using namespace std;
 
-#define BLOCK_SIZE 512
+
 
 class diskIO {
 	FILE * disk;
@@ -20,25 +20,48 @@ class diskIO {
    	void formatDisk(int sizeMB, FILE * file);
    	void writeBlock(char * data, int blockNumber);
    	void readBlock(char * data, int blockNumber);
-
+   	void setFile(char * fileName);
+   	void closeFile();
 
 };
 
-void diskIO::formatDisk(int sizeMB, FILE * file)
+void diskIO::formatDisk(int sizeMB)
 {
 	int i;
 	char by = 0;
 	for(i = 0; i <= (((BLOCK_SIZE * 2) * 1024) * sizeMB); i++)
 	{
-		fputc(by, file);
+		fputc(by, disk);
 	}
+}
+
+void diskIO::writeBlock(char * data, int blockNumber)
+{
+	fseek(disk, (BLOCK_SIZE * blockNumber), SEEK_SET);
+	fwrite(data, sizeof(char), sizeof(data), disk);
+}	
+
+void diskIO::readBlock(char * data, int blockNumber)
+{
+	fseek(disk, (BLOCK_SIZE * blockNumber), SEEK_SET);
+	fread(data, sizeof(char), sizeof(data), disk);
+}
+
+void diskIO::setFile(char * fileName)
+{
+	disk = fopen(fileName, "w+");
+}
+
+void diskIO::closeFile()
+{
+	fclose(disk);
 }
 
 int main()
 {
 	diskIO dsk;
-	FILE * fin = fopen("disk.bin", "w+");
-	dsk.formatDisk(36, fin);
-	fclose(fin);
+	setFile("disk.bin")
+	dsk.formatDisk(36);
+	closeFile();
 	return 0;
 }
