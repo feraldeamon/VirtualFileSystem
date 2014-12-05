@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
+#include "disk.h"
 using namespace std;
 
 
@@ -17,10 +19,10 @@ class diskIO {
 		disk = NULL;
 	};
 	~diskIO() {};
-   	void formatDisk(int sizeMB, FILE * file);
+   	void formatDisk(int sizeMB);
    	void writeBlock(char * data, int blockNumber);
    	void readBlock(char * data, int blockNumber);
-   	void setFile(char * fileName);
+   	void setFile(string fileName);
    	void closeFile();
 
 };
@@ -47,9 +49,13 @@ void diskIO::readBlock(char * data, int blockNumber)
 	fread(data, sizeof(char), sizeof(data), disk);
 }
 
-void diskIO::setFile(char * fileName)
+void diskIO::setFile(string fileName)
 {
-	disk = fopen(fileName, "w+");
+
+	char * cstr = new char [fileName.length()+1];
+	strcpy(cstr, fileName.c_str());
+	disk = fopen(cstr, "w+");
+	delete cstr;
 }
 
 void diskIO::closeFile()
@@ -60,8 +66,9 @@ void diskIO::closeFile()
 int main()
 {
 	diskIO dsk;
-	setFile("disk.bin")
+	string fileName("disk.bin");
+	dsk.setFile(fileName);
 	dsk.formatDisk(36);
-	closeFile();
+	dsk.closeFile();
 	return 0;
 }
